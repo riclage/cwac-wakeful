@@ -14,14 +14,17 @@
 
 package com.commonsware.cwac.wakeful;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.PowerManager;
 
+@TargetApi(Build.VERSION_CODES.ECLAIR)
 abstract public class WakefulIntentService extends IntentService {
   abstract protected void doWakefulWork(Intent intent);
 
@@ -30,7 +33,7 @@ abstract public class WakefulIntentService extends IntentService {
   static final String LAST_ALARM="lastAlarm";
   private static volatile PowerManager.WakeLock lockStatic=null;
 
-  synchronized private static PowerManager.WakeLock getLock(Context context) {
+  synchronized protected static PowerManager.WakeLock getLock(Context context) {
     if (lockStatic == null) {
       PowerManager mgr=
           (PowerManager)context.getSystemService(Context.POWER_SERVICE);
@@ -101,7 +104,7 @@ abstract public class WakefulIntentService extends IntentService {
   }
 
   @Override
-  final protected void onHandleIntent(Intent intent) {
+  protected void onHandleIntent(Intent intent) {
     try {
       doWakefulWork(intent);
     }
